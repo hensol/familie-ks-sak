@@ -1,6 +1,5 @@
 package no.nav.familie.ks.sak.barnehagelister.domene
 
-import no.nav.familie.ks.sak.config.KafkaConfig
 import tools.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper
 import tools.jackson.dataformat.xml.annotation.JacksonXmlProperty
 import tools.jackson.dataformat.xml.annotation.JacksonXmlRootElement
@@ -46,7 +45,7 @@ data class BarnInfolinje(
             kommuneNavn = kommuneNavn,
             kommuneNr = kommuneNr,
             arkivReferanse = arkivReferanse,
-            kildeTopic = KafkaConfig.BARNEHAGELISTE_AAPEN_TOPIC,
+            kildeTopic = null,
         )
 }
 
