@@ -68,7 +68,6 @@ import org.springframework.web.bind.annotation.RestController
 import java.math.BigDecimal
 import java.net.URI
 import java.time.LocalDate
-import java.util.UUID
 
 @RestController
 @RequestMapping("/api/forvaltning/")
@@ -249,18 +248,6 @@ class ForvaltningController(
         vilkårsvurderingService.fyllUtVilkårsvurdering(behandlingId)
 
         return ResponseEntity.ok(Ressurs.success("Oppdaterte vilkårsvurdering"))
-    }
-
-    @GetMapping("/barnehageliste/lesOgArkiver/{uuid}")
-    fun lesOgArkiverBarnehageliste(
-        @PathVariable uuid: String,
-    ): ResponseEntity<Ressurs<String>> {
-        tilgangService.validerTilgangTilHandling(
-            minimumBehandlerRolle = BehandlerRolle.FORVALTER,
-            handling = "teste lesing og arkivering av barnehageliste",
-        )
-        barnehageListeService.lesOgArkiverBarnehageliste(UUID.fromString(uuid))
-        return ResponseEntity.ok(Ressurs.success(":)", "Barnehagliste lest og arkivert"))
     }
 
     @GetMapping("/barnehageliste/hentUarkvierteBarnehagelisteUuider")

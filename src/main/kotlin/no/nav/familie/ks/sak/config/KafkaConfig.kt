@@ -43,9 +43,6 @@ class KafkaConfig(
     fun earliestConsumerFactory(): ConsumerFactory<String, String> = DefaultKafkaConsumerFactory(consumerConfigsEarliest())
 
     @Bean
-    fun earliestConsumerFactoryAvro(): ConsumerFactory<String, String> = DefaultKafkaConsumerFactory(consumerConfigsEarliestAvro())
-
-    @Bean
     fun concurrentKafkaListenerContainerFactory(
         kafkaErrorHandler: KafkaErrorHandler,
     ): ConcurrentKafkaListenerContainerFactory<String, String> =
@@ -74,37 +71,6 @@ class KafkaConfig(
             setConsumerFactory(DefaultKafkaConsumerFactory(consumerConfigsLatestAvro()))
             setCommonErrorHandler(kafkaErrorHandler)
         }
-
-    @Bean
-    fun earliestConcurrentKafkaListenerContainerFactoryAvro(
-        kafkaErrorHandler: KafkaErrorHandler,
-    ): ConcurrentKafkaListenerContainerFactory<String, String> =
-        ConcurrentKafkaListenerContainerFactory<String, String>().apply {
-            setConcurrency(1)
-            containerProperties.ackMode = ContainerProperties.AckMode.MANUAL
-            setConsumerFactory(earliestConsumerFactoryAvro())
-            setCommonErrorHandler(kafkaErrorHandler)
-        }
-
-    private fun consumerConfigsEarliestAvro(): Map<String, Any> {
-        val kafkaBrokers = System.getenv("KAFKA_BROKERS") ?: "http://localhost:9092"
-        val schemaRegistry = System.getenv("KAFKA_SCHEMA_REGISTRY") ?: "http://localhost:9093"
-        val schemaRegistryUser = System.getenv("KAFKA_SCHEMA_REGISTRY_USER") ?: "mangler i pod"
-        val schemaRegistryPassword = System.getenv("KAFKA_SCHEMA_REGISTRY_PASSWORD") ?: "mangler i pod"
-        val consumerConfigs =
-            mutableMapOf(
-                ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG to kafkaBrokers,
-                "schema.registry.url" to schemaRegistry,
-                "basic.auth.credentials.source" to "USER_INFO",
-                "basic.auth.user.info" to "$schemaRegistryUser:$schemaRegistryPassword",
-                "specific.avro.reader" to true,
-                ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG to StringDeserializer::class.java,
-                ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG to KafkaAvroDeserializer::class.java,
-                ConsumerConfig.CLIENT_ID_CONFIG to "consumer-familie-ks-sak-1",
-                ConsumerConfig.AUTO_OFFSET_RESET_CONFIG to "earliest",
-            )
-        return consumerConfigs.toMap() + securityConfig()
-    }
 
     private fun consumerConfigsLatestAvro(): Map<String, Any> {
         val kafkaBrokers = System.getenv("KAFKA_BROKERS") ?: "http://localhost:9092"
@@ -179,7 +145,6 @@ class KafkaConfig(
         )
 
     companion object {
-        const val BARNEHAGELISTE_AAPEN_TOPIC = "alf.aapen-altinn-barnehageliste-mottatt"
         const val BARNEHAGELISTE_TOPIC = "teamfamilie.privat-kontantstotte-barnehagelister"
         const val BEHANDLING_TOPIC = "teamfamilie.aapen-kontantstotte-saksstatistikk-behandling-v1"
         const val SISTE_TILSTAND_BEHANDLING_TOPIC = "teamfamilie.aapen-kontantstotte-saksstatistikk-siste-tilstand-behandling-v1"
